@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
 using System.Data;
 using System.Configuration;
 using Npgsql;
@@ -57,64 +58,179 @@ namespace DB_Explorer_v0._2
     public class Makers
     {
         private static string connectionString = ConfigurationManager.ConnectionStrings["university_DB"].ToString();
-        public DataTable makeTeachersTable(string Querry)
+
+        static public DataTable makeTableByQuerry(string Querry)
         {
+            NpgsqlConnection connection = new NpgsqlConnection(connectionString);
+            connection.Open();
+
             NpgsqlCommand command = new NpgsqlCommand();
-            command.Connection = new NpgsqlConnection(connectionString);
-            command.Connection.Open();
-            if (Querry != null | Querry != "") command.CommandText = Querry;
-            else command.CommandText = "Select * From teachers";
+            command.Connection = connection;
+            command.CommandText = Querry;
+
             NpgsqlDataReader dataReader = command.ExecuteReader();
-            command.Connection.Close();
-            command.Connection.Dispose();
-            command.Dispose();
+            DataTable dt = new DataTable();
 
-            //Инициализация таблицы DataTable для хранения данных и последующей вставки в DataGrid
-            DataTable table = new DataTable("teachers");
-            DataColumn column;
-            DataRow row;
-
-            //Инициализация и настройка столбца ID
-            column = new DataColumn();
-            column.DataType = typeof(int);
-            column.ColumnName = "ID";
-            column.ReadOnly = true;
-            table.Columns.Add(column);
-
-            //Инициализация и настройка столбца Name
-            column = new DataColumn();
-            column.DataType = typeof(string);
-            column.ColumnName = "Имя";
-            table.Columns.Add(column);
-
-            //Инициализация и настройка столбца department_id
-            column = new DataColumn();
-            column.DataType = typeof(int);
-            column.ColumnName = "ID кафедры";
-            table.Columns.Add(column);
-
-            //Вставка данных в таблицу
-            while(dataReader.Read())
+            if(dataReader.HasRows)
             {
-                table.Rows.Add(dataReader.Read());
+                dt.Load(dataReader);
             }
-            dataReader.Close();
-            dataReader.Dispose();
+
+            return dt;
+        } 
+
+        static public DataTable makeTeachersTable(string Querry)
+        {
+            //Создание таблицы
+            DataTable table = makeTableByQuerry(Querry);
+
+            //Локализация имен столбцов
+            table.Columns[0].ColumnName = "ID";
+            table.Columns[1].ColumnName = "Имя";
+            table.Columns[2].ColumnName = "ID кафедры";
+            return table;
+        }
+
+        static public DataTable makeMaterialsTable(string Querry)
+        {
+            DataTable table = makeTableByQuerry(Querry);
+
+            table.Columns[0].ColumnName = "ID";
+            table.Columns[1].ColumnName = "Название";
+            table.Columns[2].ColumnName = "ID Автора";
+            table.Columns[3].ColumnName = "Год выхода";
+            table.Columns[4].ColumnName = "Число страниц";
+            table.Columns[5].ColumnName = "ID типа издания";
+            table.Columns[6].ColumnName = "ID дисциплины";
+
+            return table;
+        }
+
+        static public DataTable makeDisciplinesTable(string Querry) 
+        {
+            DataTable table = makeTableByQuerry(Querry);
+
+            table.Columns[0].ColumnName = "ID";
+            table.Columns[1].ColumnName = "Название дисциплины";
+
+            return table;
+        }
+
+        static public DataTable makeDepartmentsTable(string Querry)
+        {
+            DataTable table = makeTableByQuerry(Querry);
+
+            table.Columns[0].ColumnName = "ID";
+            table.Columns[1].ColumnName = "Название кафедры";
+
+            return table;
+        }
+
+        static public DataTable makeTypesOfMaterialsTable(string Querry)
+        {
+            DataTable table = makeTableByQuerry(Querry);
+
+            table.Columns[0].ColumnName = "ID";
+            table.Columns[1].ColumnName = "Название типа";
+
             return table;
         }
     }
 
     public partial class WorkPage : Page
     {
+        enum Tables
+        {
+            teachers,
+            guides_types,
+            guides,
+            disciplines,
+            departments
+        }
 
         static private string connectionString = ConfigurationManager.ConnectionStrings["university_DB"].ToString();
+        static private Tables currentTable;
 
         public WorkPage()
         {
             InitializeComponent();
+
+
+            SetDataGrid(Makers.makeTeachersTable("SELECT * FROM teachers"));
+            currentTable = Tables.teachers;
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private void SetDataGrid(DataTable table)
+        {
+            DBDataGrid.ItemsSource = table.DefaultView;
+        }
+
+        private void TablesMenuTeachers_Click(object sender, RoutedEventArgs e)
+        {
+            //Косметичские изменения при нажатии
+            Teachers.Foreground = new SolidColorBrush(Colors.Purple);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            string Querry = "SELECT * FROM teachers";
+            SetDataGrid(Makers.makeTeachersTable(Querry));
+        }
+
+        private void TablesMenuMaterials_Click(object sender, RoutedEventArgs e)
+        {
+            //Косметичские изменения при нажатии
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Purple);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            string Querry = "SELECT * FROM guides";
+            SetDataGrid(Makers.makeMaterialsTable(Querry));
+        }
+
+        private void TablesMenuDisciplines_Click(object sender, RoutedEventArgs e)
+        {
+            //Косметичские изменения при нажатии
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Purple);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            string Querry = "SELECT * FROM disciplines";
+            SetDataGrid(Makers.makeDisciplinesTable(Querry));
+        }
+
+        private void TablesMenuDepartments_Click(object sender, RoutedEventArgs e)
+        {
+            //Косметичские изменения при нажатии
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Purple);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            string Querry = "SELECT * FROM departments";
+            SetDataGrid(Makers.makeDepartmentsTable(Querry));
+        }
+
+        private void TablesMenuTypesOfMaterials_Click(object sender, RoutedEventArgs e)
+        {
+            //Косметичские изменения при нажатии
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Purple);
+
+            string Querry = "SELECT * FROM guides_types";
+            SetDataGrid(Makers.makeTypesOfMaterialsTable(Querry));
+        }
+
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
