@@ -23,7 +23,10 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="SearchBox" Grid.Row="0" Margin="10" Height="40" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Поиск по имени" TextChanged="SearchBox_TextChanged"/>
+        
+        <TextBox x:Name="SearchBox" Grid.Row="0" HorizontalAlignment="Left" Margin="10" Height="40" Width="550" materialDesign:HintAssist.HelperText="Поиск по имени преподавателя" Style="{StaticResource MaterialDesignFloatingHintTextBox}" TextChanged="SearchBox_TextChanged"/>
+        <Button x:Name="AddNewRow" Click="AddNewRow_Click" Grid.Row="0" HorizontalAlignment="Right" Margin="20 10" Height="40" Width="180" Content="Добавить запись" Style="{StaticResource MaterialDesignFlatButton}"/>
+       
         <Menu x:Name="TablesMenu" Grid.Row="1" VerticalAlignment="Center" FontWeight="Black">
             <MenuItem x:Name="Teachers" Click="TablesMenuTeachers_Click" Header="Преподаватели" Foreground="Purple"/>
             <MenuItem x:Name="Materials" Click="TablesMenuMaterials_Click" Header="Учебные материалы"  Foreground="Black"/>
@@ -31,12 +34,13 @@
             <MenuItem x:Name="Departments" Click="TablesMenuDepartments_Click" Header="Кафедры" Foreground="Black"/>
             <MenuItem x:Name="TypesOfMaterials" Click="TablesMenuTypesOfMaterials_Click" Header="Типы материалов" Foreground="Black"/>
         </Menu>
-        <DataGrid x:Name="DBDataGrid" Grid.Row="2" Grid.RowSpan="7" Margin="10" FontSize="16" RowBackground="LightGray" AlternatingRowBackground="White" SelectionMode="Single" SelectionUnit="FullRow">
+        
+        <DataGrid x:Name="DBDataGrid" Grid.Row="2" Grid.RowSpan="7" Margin="10" FontSize="16" SelectionMode="Single" SelectionUnit="FullRow">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Копировать" Command="Copy" />
-                    <MenuItem Header="Редактировать запись"/>
-                    <MenuItem Header="Удалить запись"/>
+                    <MenuItem x:Name="ContextUpdate" Header="Редактировать запись" Click="ContextUpdate_Click"/>
+                    <MenuItem x:Name="ContextDelete" Header="Удалить запись" Click="ContextDelete_Click"/>
                     <MenuItem Header="Что-то ещё"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
