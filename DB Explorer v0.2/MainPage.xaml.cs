@@ -29,5 +29,10 @@ namespace DB_Explorer_v0._2
         {
             this.NavigationService.Navigate(new Uri("WorkPage.xaml", UriKind.Relative));
         }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            Environment.Exit(0);
+        }
     }
 }

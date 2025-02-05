@@ -33,6 +33,7 @@
             <MenuItem x:Name="Disciplines" Click="TablesMenuDisciplines_Click" Header="Дисциплины" Foreground="Black"/>
             <MenuItem x:Name="Departments" Click="TablesMenuDepartments_Click" Header="Кафедры" Foreground="Black"/>
             <MenuItem x:Name="TypesOfMaterials" Click="TablesMenuTypesOfMaterials_Click" Header="Типы материалов" Foreground="Black"/>
+            <MenuItem x:Name="ExitButton" Click="ExitButton_Click" Header="Выход" Foreground="MediumPurple"/>
         </Menu>
         
         <DataGrid x:Name="DBDataGrid" Grid.Row="2" Grid.RowSpan="7" Margin="10" FontSize="16" SelectionMode="Single" SelectionUnit="FullRow">

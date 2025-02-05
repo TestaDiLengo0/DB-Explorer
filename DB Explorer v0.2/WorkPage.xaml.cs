@@ -17,6 +17,7 @@ using System.Data;
 using System.Configuration;
 using Npgsql;
 using System.Windows.Documents.DocumentStructures;
+using DB_Explorer_v0._2.RedcWins;
 
 namespace DB_Explorer_v0._2
 {
@@ -233,7 +234,7 @@ namespace DB_Explorer_v0._2
             currentTable = Tables.teachers;
         }
 
-        private void SetDataGrid(DataTable table)
+        public void SetDataGrid(DataTable table)
         {
             DBDataGrid.ItemsSource = table.DefaultView;
         }
@@ -338,7 +339,7 @@ namespace DB_Explorer_v0._2
             MaterialDesignThemes.Wpf.HintAssist.SetHelperText(SearchBox, "Поиск по типам");
         }
 
-        private DataTable CreateTableWithEnters()
+        public DataTable CreateTableWithEnters()
         {
             string args;
             string targetColumn;
@@ -350,35 +351,35 @@ namespace DB_Explorer_v0._2
                     args = teachersEnter;
                     targetColumn = "teacher_name";
 
-                    dt = Makers.MakeTeachersTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(' ')));
+                    dt = Makers.MakeTeachersTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
                     break;
                 case Tables.guides:
                     materialsEnter = SearchBox.Text;
                     args = materialsEnter;
                     targetColumn = "guide_name";
 
-                    dt = Makers.MakeMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(' ')));
+                    dt = Makers.MakeMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
                     break;
                 case Tables.disciplines:
                     disciplinesEnter = SearchBox.Text;
                     args = disciplinesEnter;
                     targetColumn = "discipline_name";
 
-                    dt = Makers.MakeDisciplinesTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(' ')));
+                    dt = Makers.MakeDisciplinesTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
                     break;
                 case Tables.departments:
                     departmentsEnter = SearchBox.Text;
                     args = departmentsEnter;
                     targetColumn = "department_name";
 
-                    dt = Makers.MakeDepartmentsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(' ')));
+                    dt = Makers.MakeDepartmentsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
                     break;
                 case Tables.guides_types:
                     typesEnter = SearchBox.Text;
                     args = typesEnter;
                     targetColumn = "guide_tye_name";
 
-                    dt = Makers.MakeTypesOfMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(' ')));
+                    dt = Makers.MakeTypesOfMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
                     break;
             }
             return dt;
@@ -410,15 +411,16 @@ namespace DB_Explorer_v0._2
 
         private void ContextUpdate_Click(object sender, RoutedEventArgs e)
         {
+            string[] args = new string[DBDataGrid.SelectedCells.Count];
+            for (int i = 0; i < args.Length; i++)
+            {
+                args[i] = Convert.ToString(((DataRowView)DBDataGrid.SelectedItem)[i]);
+            }
 
-        }
-
-        private void AddNewRow_Click(object sender, RoutedEventArgs e)
-        {
-            switch(currentTable)
+            switch (currentTable)
             {
                 case Tables.teachers:
-
+                    new TeachersWin(this, "UPDATE", args).Show();
                     break;
                 case Tables.guides:
 
@@ -433,6 +435,33 @@ namespace DB_Explorer_v0._2
 
                     break;
             }
+        }
+
+        private void AddNewRow_Click(object sender, RoutedEventArgs e)
+        {
+            switch(currentTable)
+            {
+                case Tables.teachers:
+                    new TeachersWin(this, "INSERT", new string[0]).Show();
+                    break;
+                case Tables.guides:
+
+                    break;
+                case Tables.disciplines:
+
+                    break;
+                case Tables.departments:
+
+                    break;
+                case Tables.guides_types:
+
+                    break;
+            }
+        }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService.Navigate(new Uri("MainPage.xaml", UriKind.Relative));
         }
     }
 }

@@ -17,7 +17,7 @@
                 <Label Padding="0 0 0 20" Margin="0 0 0 50" FontWeight="ExtraBlack" HorizontalContentAlignment="Center" FontSize="40" Content="DB EXPLORER"/>
                 <Button x:Name="StartButton" Click="StartButton_Click" Margin="50 10" FontSize="20" FontWeight="Medium" Height="40" Content="Начало работы"/>
                 <Button x:Name="FreeButton" Margin="50 10" FontSize="20" FontWeight="Medium" Height="40" Content="Свободный режим"/>
-                <Button x:Name="ExitButton" Margin="50 10" FontSize="20" FontWeight="Medium" Height="40" Content="Выход"/>
+                <Button x:Name="ExitButton" Click="ExitButton_Click" Margin="50 10" FontSize="20" FontWeight="Medium" Height="40" Content="Выход"/>
             </StackPanel>
         </Border>
     </Grid>
