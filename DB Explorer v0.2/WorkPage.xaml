@@ -36,7 +36,7 @@
             <MenuItem x:Name="ExitButton" Click="ExitButton_Click" Header="Выход" Foreground="MediumPurple"/>
         </Menu>
         
-        <DataGrid x:Name="DBDataGrid" Grid.Row="2" Grid.RowSpan="7" Margin="10" FontSize="16" SelectionMode="Single" SelectionUnit="FullRow">
+        <DataGrid x:Name="DBDataGrid" CanUserAddRows="False" Grid.Row="2" Grid.RowSpan="7" Margin="10" FontSize="16" SelectionMode="Single" SelectionUnit="FullRow">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Копировать" Command="Copy" />

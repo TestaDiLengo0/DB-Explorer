@@ -68,11 +68,13 @@ namespace DB_Explorer_v0._2
         static public String MakeQuerry(string tableName, string targetColumn, string[] args)
         {
             string querry = $"SELECT * FROM {tableName}";
-            if (args.Length == 0 | args == null) return querry;
-            querry += $" WHERE {targetColumn} LIKE \'%{args[0]}%\'";
-            for (int i = 1; i < args.Length; i++)
+            if (args.Length != 0 | args != null)
             {
-                querry += $" OR {targetColumn} LIKE \'%{args[i]}%\'";
+                querry += $" WHERE LOWER({targetColumn}) LIKE \'%{args[0]}%\'";
+                for (int i = 1; i < args.Length; i++)
+                {
+                    querry += $" OR LOWER({targetColumn}) LIKE \'%{args[i]}%\'";
+                }
             }
             return querry;
         }
@@ -351,35 +353,35 @@ namespace DB_Explorer_v0._2
                     args = teachersEnter;
                     targetColumn = "teacher_name";
 
-                    dt = Makers.MakeTeachersTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
+                    dt = Makers.MakeTeachersTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
                     break;
                 case Tables.guides:
                     materialsEnter = SearchBox.Text;
                     args = materialsEnter;
                     targetColumn = "guide_name";
 
-                    dt = Makers.MakeMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
+                    dt = Makers.MakeMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
                     break;
                 case Tables.disciplines:
                     disciplinesEnter = SearchBox.Text;
                     args = disciplinesEnter;
                     targetColumn = "discipline_name";
 
-                    dt = Makers.MakeDisciplinesTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
+                    dt = Makers.MakeDisciplinesTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
                     break;
                 case Tables.departments:
                     departmentsEnter = SearchBox.Text;
                     args = departmentsEnter;
                     targetColumn = "department_name";
 
-                    dt = Makers.MakeDepartmentsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
+                    dt = Makers.MakeDepartmentsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
                     break;
                 case Tables.guides_types:
                     typesEnter = SearchBox.Text;
                     args = typesEnter;
                     targetColumn = "guide_tye_name";
 
-                    dt = Makers.MakeTypesOfMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.Split(", ")));
+                    dt = Makers.MakeTypesOfMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
                     break;
             }
             return dt;
@@ -420,8 +422,13 @@ namespace DB_Explorer_v0._2
             switch (currentTable)
             {
                 case Tables.teachers:
-                    new TeachersWin(this, "UPDATE", args).Show();
+                    TeachersWin win = new TeachersWin(this, "UPDATE", args)
+                    {
+                        Owner = Application.Current.MainWindow
+                    };
+                    win.Show();
                     break;
+
                 case Tables.guides:
 
                     break;
@@ -442,8 +449,13 @@ namespace DB_Explorer_v0._2
             switch(currentTable)
             {
                 case Tables.teachers:
-                    new TeachersWin(this, "INSERT", new string[0]).Show();
+                    TeachersWin win = new TeachersWin(this, "INSERT", new string[0])
+                    {
+                        Owner = Application.Current.MainWindow
+                    };
+                    win.Show();
                     break;
+
                 case Tables.guides:
 
                     break;

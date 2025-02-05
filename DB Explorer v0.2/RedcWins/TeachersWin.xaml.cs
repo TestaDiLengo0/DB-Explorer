@@ -111,5 +111,11 @@ namespace DB_Explorer_v0._2.RedcWins
                 MessageBox.Show("Данные введены некорректно!", "Ошибка ввода", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            parentPage.IsEnabled = true;
+            this.Close();
+        }
     }
 }

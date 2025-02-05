@@ -34,5 +34,10 @@ namespace DB_Explorer_v0._2
         {
             Environment.Exit(0);
         }
+
+        private void FreeButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Пока недоступно!", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 }
