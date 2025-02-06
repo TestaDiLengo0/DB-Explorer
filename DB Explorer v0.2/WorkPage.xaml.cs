@@ -18,6 +18,7 @@ using System.Configuration;
 using Npgsql;
 using System.Windows.Documents.DocumentStructures;
 using DB_Explorer_v0._2.RedcWins;
+using System.Windows.Controls.Primitives;
 
 namespace DB_Explorer_v0._2
 {
@@ -25,37 +26,6 @@ namespace DB_Explorer_v0._2
     /// Логика взаимодействия для WorkPage.xaml
     /// </summary> 
     ///Класс для создания строки к таблице преподавателей
-    public class Teacher
-    {
-        private int id;
-        private string name = "";
-        private int departmentId; 
-
-        public int Id
-        {
-            set { id = value; }
-            get { return id; }
-        }
-        
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
-
-        public int DepartmentId
-        {
-            set { departmentId = value; }
-            get { return departmentId; }
-        }
-
-        public Teacher(int  id, string name, int departmentId)
-        {
-            Id = id;
-            Name = name;
-            DepartmentId = departmentId;
-        }
-    }
 
     public class Makers
     {
@@ -65,9 +35,19 @@ namespace DB_Explorer_v0._2
         //Method that makes the SQL-Querry by some arguments
         //
 
-        static public String MakeQuerry(string tableName, string targetColumn, string[] args)
+        static public String MakeQuerry(WorkPage.Tables tableName, string targetColumn, string[] args)
         {
-            string querry = $"SELECT * FROM {tableName}";
+            string querry = "SELECT * FROM ";
+            switch (tableName)
+            {
+                case WorkPage.Tables.teachers:
+                case WorkPage.Tables.guides:
+                    querry += $"select_all_{tableName.ToString()}()";
+                    break;
+                default:
+                    querry += tableName.ToString();
+                    break;
+            }
             if (args.Length != 0 | args != null)
             {
                 querry += $" WHERE LOWER({targetColumn}) LIKE \'%{args[0]}%\'";
@@ -99,6 +79,10 @@ namespace DB_Explorer_v0._2
             {
                 dt.Load(dataReader);
             }
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+            connection.Dispose();
 
             return dt;
         } 
@@ -113,12 +97,12 @@ namespace DB_Explorer_v0._2
             {
                 table.Columns[0].ColumnName = "ID";
                 table.Columns[1].ColumnName = "Имя";
-                table.Columns[2].ColumnName = "ID кафедры";
+                table.Columns[2].ColumnName = "Кафедра";
             }
             else
             {
                 table.Columns.Add("Вывод");
-                table.Rows.Add("По этому запросу ничего не найдено");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
             }
             return table;
         }
@@ -131,16 +115,16 @@ namespace DB_Explorer_v0._2
             {
                 table.Columns[0].ColumnName = "ID";
                 table.Columns[1].ColumnName = "Название";
-                table.Columns[2].ColumnName = "ID Автора";
+                table.Columns[2].ColumnName = "Имя автора";
                 table.Columns[3].ColumnName = "Год выхода";
                 table.Columns[4].ColumnName = "Число страниц";
-                table.Columns[5].ColumnName = "ID типа издания";
-                table.Columns[6].ColumnName = "ID дисциплины";
+                table.Columns[5].ColumnName = "Тип издания";
+                table.Columns[6].ColumnName = "Дисциплина";
             }
             else
             {
                 table.Columns.Add("Вывод");
-                table.Rows.Add("По этому запросу ничего не найдено");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
             }
             return table;
         }
@@ -157,7 +141,7 @@ namespace DB_Explorer_v0._2
             else
             {
                 table.Columns.Add("Вывод");
-                table.Rows.Add("По этому запросу ничего не найдено");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
             }
             return table;
         }
@@ -174,7 +158,7 @@ namespace DB_Explorer_v0._2
             else
             {
                 table.Columns.Add("Вывод");
-                table.Rows.Add("По этому запросу ничего не найдено");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
             }
             return table;
         }
@@ -191,19 +175,116 @@ namespace DB_Explorer_v0._2
             else
             {
                 table.Columns.Add("Вывод");
-                table.Rows.Add("По этому запросу ничего не найдено");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
             }
             return table;
         }
-        //////////////////////////////////////////////////////////////
-        ///
+        
+        ///Таблицы под готовые запросы
 
-        //
-        //Методы для создания окон редактирования и вставки данных
-        // Нужно будет ещё это обдумать
-        //
+        static public DataTable MakeReady1Table()
+        {
+            DataTable table = MakeTableByQuerry("SELECT * FROM get_authors_departments_publications();");
+
+            if(table.Rows.Count > 0)
+            {
+                table.Columns[0].ColumnName = "Имя автора";
+                table.Columns[1].ColumnName = "Кафедра";
+                table.Columns[2].ColumnName = "Название издания";
+                table.Columns[3].ColumnName = "Год издания";
+            }
+            else
+            {
+                table.Columns.Add("Вывод");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
+            }
+            return table;
+        }
+
+        static public DataTable MakeReady2Table()
+        {
+            DataTable table = MakeTableByQuerry("SELECT * FROM get_publications_grouped_by_departments_and_disciplines();");
+
+            if (table.Rows.Count > 0)
+            {
+                table.Columns[0].ColumnName = "Кафедра";
+                table.Columns[1].ColumnName = "Дисциплина";
+                table.Columns[2].ColumnName = "Название издания";
+                table.Columns[3].ColumnName = "Год издания";
+            }
+            else
+            {
+                table.Columns.Add("Вывод");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
+            }
+            return table;
+        }
+
+        static public DataTable MakeReady3Table()
+        {
+            DataTable table = MakeTableByQuerry("SELECT * FROM get_publication_counts_by_departments_last_5_years();");
+
+            if (table.Rows.Count > 0)
+            {
+                table.Columns[0].ColumnName = "Кафедра";
+                table.Columns[1].ColumnName = "Кол-во изданий";
+            }
+            else
+            {
+                table.Columns.Add("Вывод");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
+            }
+            return table;
+        }
+
+        static public DataTable MakeReady4Table()
+        {
+            DataTable table = MakeTableByQuerry("SELECT * FROM get_publication_counts_by_departments_last_5_years();");
+
+            if (table.Rows.Count > 0)
+            {
+                table.Columns[0].ColumnName = "Тип издания";
+                table.Columns[1].ColumnName = "Кол-во изданий";
+            }
+            else
+            {
+                table.Columns.Add("Вывод");
+                table.Rows.Add("По этому запросу ничего не найдено :(");
+            }
+            return table;
+        }
+
+        static public DataTable MakeReady5Table(string[] args)
+        {
+            string Querry = "SELECT * FROM get_publication_counts_and_type_by_author_and_period() ";
+            if (args.Length > 0)
+            {
+                Querry += $"WHERE LOWER(author_name) LIKE \'%{args[0]}%\'";
+                for(int i = 1; i < args.Length; i++)
+                {
+                    Querry += $" LOWER(author_name) LIKE \'{args[i]}\' ";
+                }
+            }
+                DataTable table = MakeTableByQuerry(Querry);
+
+                if (table.Rows.Count > 0)
+                {
+                    table.Columns[0].ColumnName = "Имя автора";
+                    table.Columns[1].ColumnName = "Тип издания";
+                    table.Columns[2].ColumnName = "Кол-во изданий";
+                }
+                else
+                {
+                    table.Columns.Add("Вывод");
+                    table.Rows.Add("По этому запросу ничего не найдено :(");
+                }
+            return table;
+        }
 
     }
+
+
+    //////////////////////////////////
 
     public partial class WorkPage : Page
     {
@@ -213,7 +294,9 @@ namespace DB_Explorer_v0._2
             guides_types,
             guides,
             disciplines,
-            departments
+            departments,
+            readyQuerries,
+            readyQuerries5
         }
 
         static public Tables currentTable;
@@ -226,13 +309,14 @@ namespace DB_Explorer_v0._2
         private string disciplinesEnter = string.Empty;
         private string departmentsEnter = string.Empty;
         private string typesEnter = string.Empty;
+        private string readiesEnter = string.Empty;
 
         public WorkPage()
         {
             InitializeComponent();
 
 
-            SetDataGrid(Makers.MakeTeachersTable("SELECT * FROM teachers"));
+            SetDataGrid(Makers.MakeTeachersTable("SELECT * FROM select_all_teachers();"));
             currentTable = Tables.teachers;
         }
 
@@ -250,9 +334,14 @@ namespace DB_Explorer_v0._2
             Departments.Foreground = new SolidColorBrush(Colors.Black);
             TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
 
+            SearchBox.IsEnabled = true;
+            AddNewRow.IsEnabled = true;
+            ContextDelete.IsEnabled = true;
+            ContextUpdate.IsEnabled = true;
+
             if (teachersEnter == string.Empty)
             {
-                string Querry = "SELECT * FROM teachers";
+                string Querry = "SELECT * FROM select_all_teachers();";
                 SetDataGrid(Makers.MakeTeachersTable(Querry));
             }
             currentTable = Tables.teachers;
@@ -270,9 +359,14 @@ namespace DB_Explorer_v0._2
             Departments.Foreground = new SolidColorBrush(Colors.Black);
             TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
 
+            SearchBox.IsEnabled = true;
+            AddNewRow.IsEnabled = true;
+            ContextDelete.IsEnabled = true;
+            ContextUpdate.IsEnabled = true;
+
             if (materialsEnter == string.Empty)
             {
-                string Querry = "SELECT * FROM guides";
+                string Querry = "SELECT * FROM select_all_guides();";
                 SetDataGrid(Makers.MakeMaterialsTable(Querry));
             }
             currentTable = Tables.guides;
@@ -289,6 +383,11 @@ namespace DB_Explorer_v0._2
             Disciplines.Foreground = new SolidColorBrush(Colors.Purple);
             Departments.Foreground = new SolidColorBrush(Colors.Black);
             TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            SearchBox.IsEnabled = true;
+            AddNewRow.IsEnabled = true;
+            ContextDelete.IsEnabled = true;
+            ContextUpdate.IsEnabled = true;
 
             if (disciplinesEnter == string.Empty)
             {
@@ -310,6 +409,11 @@ namespace DB_Explorer_v0._2
             Departments.Foreground = new SolidColorBrush(Colors.Purple);
             TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
 
+            SearchBox.IsEnabled = true;
+            AddNewRow.IsEnabled = true;
+            ContextDelete.IsEnabled = true;
+            ContextUpdate.IsEnabled = true;
+
             if (departmentsEnter == string.Empty)
             {
                 string Querry = "SELECT * FROM departments";
@@ -330,6 +434,11 @@ namespace DB_Explorer_v0._2
             Departments.Foreground = new SolidColorBrush(Colors.Black);
             TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Purple);
 
+            SearchBox.IsEnabled = true;
+            AddNewRow.IsEnabled = true;
+            ContextDelete.IsEnabled = true;
+            ContextUpdate.IsEnabled = true;
+
             if (typesEnter == string.Empty)
             {
                 string Querry = "SELECT * FROM guides_types";
@@ -339,6 +448,110 @@ namespace DB_Explorer_v0._2
 
             SearchBox.Text = typesEnter;
             MaterialDesignThemes.Wpf.HintAssist.SetHelperText(SearchBox, "Поиск по типам");
+        }
+
+        private void ReadyQuerries1_Click(object sender, RoutedEventArgs e)
+        {
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            SearchBox.IsEnabled = false;
+            AddNewRow.IsEnabled = false;
+            ContextDelete.IsEnabled = false;
+            ContextUpdate .IsEnabled = false;
+
+            SearchBox.Text = string.Empty;
+
+            SetDataGrid(Makers.MakeReady1Table());
+
+            currentTable = Tables.readyQuerries;
+        }
+
+        private void ReadyQuerries2_Click(object sender, RoutedEventArgs e)
+        {
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            SearchBox.IsEnabled = false;
+            AddNewRow.IsEnabled = false;
+            ContextDelete.IsEnabled = false;
+            ContextUpdate.IsEnabled = false;
+
+            SearchBox.Text = string.Empty;
+
+            SetDataGrid(Makers.MakeReady2Table());
+
+            currentTable = Tables.readyQuerries;
+        }
+
+        private void ReadyQuerries3_Click(object sender, RoutedEventArgs e)
+        {
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            SearchBox.IsEnabled = false;
+            AddNewRow.IsEnabled = false;
+            ContextDelete.IsEnabled = false;
+            ContextUpdate.IsEnabled = false;
+
+            SearchBox.Text = string.Empty;
+
+            SetDataGrid(Makers.MakeReady3Table());
+
+            currentTable = Tables.readyQuerries;
+        }
+
+        private void ReadyQuerries4_Click(object sender, RoutedEventArgs e)
+        {
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            SearchBox.IsEnabled = false;
+            AddNewRow.IsEnabled = false;
+            ContextDelete.IsEnabled = false;
+            ContextUpdate.IsEnabled = false;
+
+            SearchBox.Text = string.Empty;
+
+            SetDataGrid(Makers.MakeReady4Table());
+
+            currentTable = Tables.readyQuerries;
+        }
+
+        private void ReadyQuerries5_Click(object sender, RoutedEventArgs e)
+        {
+            Teachers.Foreground = new SolidColorBrush(Colors.Black);
+            Materials.Foreground = new SolidColorBrush(Colors.Black);
+            Disciplines.Foreground = new SolidColorBrush(Colors.Black);
+            Departments.Foreground = new SolidColorBrush(Colors.Black);
+            TypesOfMaterials.Foreground = new SolidColorBrush(Colors.Black);
+
+            SearchBox.IsEnabled = true;
+            AddNewRow.IsEnabled = false;
+            ContextDelete.IsEnabled = false;
+            ContextUpdate.IsEnabled = false;
+
+            SearchBox.Text = readiesEnter;
+
+            if(readiesEnter == string.Empty)
+            {
+                SetDataGrid(Makers.MakeReady5Table(Array.Empty<string>()));
+            }
+
+            MaterialDesignThemes.Wpf.HintAssist.SetHelperText(SearchBox, "Поиск по имени автора");
+            currentTable = Tables.readyQuerries5;
         }
 
         public DataTable CreateTableWithEnters()
@@ -353,35 +566,42 @@ namespace DB_Explorer_v0._2
                     args = teachersEnter;
                     targetColumn = "teacher_name";
 
-                    dt = Makers.MakeTeachersTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
+                    dt = Makers.MakeTeachersTable(Makers.MakeQuerry(currentTable, targetColumn, args.ToLower().Split(", ")));
                     break;
                 case Tables.guides:
                     materialsEnter = SearchBox.Text;
                     args = materialsEnter;
                     targetColumn = "guide_name";
 
-                    dt = Makers.MakeMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
+                    dt = Makers.MakeMaterialsTable(Makers.MakeQuerry(currentTable, targetColumn, args.ToLower().Split(", ")));
                     break;
                 case Tables.disciplines:
                     disciplinesEnter = SearchBox.Text;
                     args = disciplinesEnter;
                     targetColumn = "discipline_name";
 
-                    dt = Makers.MakeDisciplinesTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
+                    dt = Makers.MakeDisciplinesTable(Makers.MakeQuerry(currentTable, targetColumn, args.ToLower().Split(", ")));
                     break;
                 case Tables.departments:
                     departmentsEnter = SearchBox.Text;
                     args = departmentsEnter;
                     targetColumn = "department_name";
 
-                    dt = Makers.MakeDepartmentsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
+                    dt = Makers.MakeDepartmentsTable(Makers.MakeQuerry(currentTable, targetColumn, args.ToLower().Split(", ")));
                     break;
                 case Tables.guides_types:
                     typesEnter = SearchBox.Text;
                     args = typesEnter;
                     targetColumn = "guide_tye_name";
 
-                    dt = Makers.MakeTypesOfMaterialsTable(Makers.MakeQuerry(currentTable.ToString(), targetColumn, args.ToLower().Split(", ")));
+                    dt = Makers.MakeTypesOfMaterialsTable(Makers.MakeQuerry(currentTable, targetColumn, args.ToLower().Split(", ")));
+                    break;
+
+                case Tables.readyQuerries5:
+                    readiesEnter = SearchBox.Text;
+                    args = readiesEnter;
+
+                    dt = Makers.MakeReady5Table(args.ToLower().Split(", ")); 
                     break;
             }
             return dt;
