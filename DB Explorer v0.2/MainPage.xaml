@@ -15,9 +15,9 @@
         <Border Margin="100 50" MinHeight="400" MaxHeight="800" MinWidth="400" MaxWidth="1000" CornerRadius="20" Background="#BDBDBD">
             <StackPanel Margin="100 50">
                 <Label Padding="0 0 0 20" Margin="0 0 0 50" FontWeight="ExtraBlack" HorizontalContentAlignment="Center" FontSize="40" Content="DB EXPLORER"/>
-                <Button x:Name="StartButton" Click="StartButton_Click" Margin="50 10" FontSize="20" FontWeight="Medium" Height="40" Content="Начало работы"/>
-                <Button x:Name="FreeButton" Click="FreeButton_Click" Margin="50 10" FontSize="20" FontWeight="Medium" Height="40" Content="Свободный режим"/>
-                <Button x:Name="ExitButton" Click="ExitButton_Click" Margin="50 10" FontSize="20" FontWeight="Medium" Height="40" Content="Выход"/>
+                <Button x:Name="StartButton" Click="StartButton_Click" Margin="50 20" FontSize="20" FontWeight="Medium" Height="80" Content="Начало работы"/>
+                <!--<Button x:Name="FreeButton" Click="FreeButton_Click" Margin="50 10" FontSize="20" FontWeight="Medium" Height="40" Content="Свободный режим" Visibility="Hidden"/>-->
+                <Button x:Name="ExitButton" Click="ExitButton_Click" Margin="50 20" FontSize="20" FontWeight="Medium" Height="80" Content="Выход"/>
             </StackPanel>
         </Border>
     </Grid>

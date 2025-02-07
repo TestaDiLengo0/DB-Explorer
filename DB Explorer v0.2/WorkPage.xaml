@@ -49,7 +49,6 @@
                     <MenuItem Header="Копировать" Command="Copy" />
                     <MenuItem x:Name="ContextUpdate" Header="Редактировать запись" Click="ContextUpdate_Click"/>
                     <MenuItem x:Name="ContextDelete" Header="Удалить запись" Click="ContextDelete_Click"/>
-                    <MenuItem Header="Что-то ещё"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

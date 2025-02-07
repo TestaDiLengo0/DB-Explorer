@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DB_Explorer_v0._2"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="600" Width="950"
+        Title="DB Explorer" Height="600" Width="950"
         MinHeight="600" MinWidth="950">
     <Grid>
         <Frame x:Name ="_NavigationFrame" NavigationUIVisibility="Hidden" Source="MainPage.xaml"/>
