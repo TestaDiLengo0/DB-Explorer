@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,65 +18,36 @@ using System.Windows.Shapes;
 namespace DB_Explorer_v0._2.RedcWins
 {
     /// <summary>
-    /// Логика взаимодействия для TeachersWin.xaml
+    /// Логика взаимодействия для GuidesTypesWin.xaml
     /// </summary>
-    public partial class TeachersWin : Window
+    public partial class GuidesTypesWin : Window
     {
         private WorkPage parentPage;
 
-        static private string connectionString = ConfigurationManager.ConnectionStrings["university_DB"].ToString();
+        private string connectionString = ConfigurationManager.ConnectionStrings["university_DB"].ToString();
 
-        private string commandType = "";
-        private string[] args = [];
+        private string commandType = string.Empty;
+        private string[] args = Array.Empty<string>();
 
-        private void SetDepCombo()
+        private void SetStartBoxes()
         {
-            NpgsqlConnection connection = new NpgsqlConnection(connectionString);
-            connection.Open();
-
-            NpgsqlCommand command = new NpgsqlCommand()
+            if (commandType == "UPDATE")
             {
-                Connection = connection,
-                CommandText = "SELECT * FROM departments ORDER BY departments_id"
-            };
-            NpgsqlDataReader dataReader = command.ExecuteReader();
-
-            if (dataReader.HasRows)
-            {
-                while (dataReader.Read())
-                {
-                    departmentIDCombo.Items.Add(dataReader.GetInt32(0) + ", " + dataReader.GetString(1));
-                }
-                dataReader.Dispose();
-            }
-            switch (commandType)
-            {
-                case "INSERT":
-                    departmentIDCombo.SelectedIndex = 0;
-                    break;
-                case "UPDATE":
-                    nameBox.Text = args[1];
-                    int i = 0;
-                    for(; i < departmentIDCombo.Items.Count; i++)
-                    {
-                        if (args[2] == departmentIDCombo.Items[i].ToString().Split(", ")[1]) break;
-                    }
-                    departmentIDCombo.SelectedIndex = i;
-                    break;
+                nameBox.Text = args[1];
             }
         }
 
-        public TeachersWin(WorkPage parentPage, string commandType, string[] args)
+        public GuidesTypesWin(WorkPage parentPage, string comandType, string[] args)
         {
             this.parentPage = parentPage;
             this.parentPage.IsEnabled = false;
 
-            this.commandType = commandType;
+            this.commandType = comandType;
             this.args = args;
 
             InitializeComponent();
 
-            SetDepCombo();
+            SetStartBoxes();
         }
 
         private void EnterButton_Click(object sender, RoutedEventArgs e)
@@ -87,11 +59,11 @@ namespace DB_Explorer_v0._2.RedcWins
             {
                 parentPage.IsEnabled = true;
                 switch (commandType)
-                { 
+                {
                     case "INSERT":
                         NpgsqlCommand com = new NpgsqlCommand();
                         com.Connection = connection;
-                        com.CommandText = $"INSERT INTO teachers(teacher_name, teacher_department_id) VALUES (\'{nameBox.Text}\', {departmentIDCombo.SelectedItem.ToString().Split(", ")[0]});";
+                        com.CommandText = $"INSERT INTO guides_types(guide_type_name) VALUES (\'{nameBox.Text}\');";
                         com.ExecuteReader();
                         com.Dispose();
 
@@ -101,12 +73,12 @@ namespace DB_Explorer_v0._2.RedcWins
                     case "UPDATE":
                         NpgsqlCommand command = new NpgsqlCommand();
                         command.Connection = connection;
-                        command.CommandText = $"UPDATE teachers SET teacher_name = \'{nameBox.Text}\', teacher_department_id = {departmentIDCombo.SelectedItem.ToString().Split(", ")[0]} WHERE teachers_id = {args[0]};";
+                        command.CommandText = $"UPDATE guides_types SET guide_type_name = \'{nameBox.Text}\' WHERE guides_types_id = {args[0]};";
                         command.ExecuteReader();
                         command.Dispose();
 
                         parentPage.SetDataGrid(parentPage.CreateTableWithEnters());
-                    break;
+                        break;
                 }
                 this.Close();
             }

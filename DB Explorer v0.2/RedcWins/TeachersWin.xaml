@@ -9,12 +9,13 @@
         ResizeMode="NoResize"
         WindowStyle="None"
         WindowStartupLocation="CenterOwner"
-        Title="Ввод данных" Height="300" Width="500">
+        Title="Ввод данных" Height="300" Width="500"
+        MinHeight="300" MinWidth="500">
     <Grid>
         <Border Background="LightGray" Margin="25" CornerRadius="20">
             <StackPanel Margin="20">
                 <TextBox x:Name="nameBox" Margin="10 20" materialDesign:HintAssist.HelperText="Введите ФИО преподавателя"/>
-                <ComboBox x:Name="departmentIDCombo" Margin="10 20 10 10" materialDesign:HintAssist.HelperText="Выберите ID кафедры"/>
+                <ComboBox x:Name="departmentIDCombo" Margin="10 20 10 10" materialDesign:HintAssist.HelperText="Выберите кафедру"/>
                 <Grid>
                     <Button x:Name="EnterButton" Click="EnterButton_Click" Margin="20 40 10 40" MinWidth="150" HorizontalAlignment="Left" Content="Подтвердить ввод"/>
                     <Button x:Name="CancelButton" Click="CancelButton_Click" Margin="10 40 20 40" MinWidth="150" HorizontalAlignment="Right" Content="Отменить ввод"/>
